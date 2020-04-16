@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/tsuki42/graphql-meetup/postgres"
 	"log"
 	"net/http"
 	"os"
@@ -19,7 +20,12 @@ func main() {
 		port = defaultPort
 	}
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	config := generated.Config{Resolvers: &graph.Resolver{
+		MeetupRepo: postgres.MeetupRepo{DB: postgres.Connection},
+		UserRepo:   postgres.UserRepo{DB: postgres.Connection},
+	}}
+
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(config))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)

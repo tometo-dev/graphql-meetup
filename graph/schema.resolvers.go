@@ -6,67 +6,37 @@ package graph
 import (
 	"context"
 	"errors"
-	"fmt"
-
 	"github.com/tsuki42/graphql-meetup/graph/generated"
 	"github.com/tsuki42/graphql-meetup/graph/model"
 	"github.com/tsuki42/graphql-meetup/models"
 )
 
-var meetups = []*models.Meetup{
-	{
-		ID:          "1",
-		Name:        "Meetup 1",
-		Description: "First Meetup",
-		User:        users[0],
-	},
-	{
-		ID:          "2",
-		Name:        "Meetup 2",
-		Description: "Second meetup",
-		User:        users[1],
-	},
-}
-
-var users = []*models.User{
-	{
-		ID:       "1",
-		Username: "bob",
-		Email:    "bob@bob.com",
-	},
-	{
-		ID:       "2",
-		Username: "alice",
-		Email:    "alice@alice.com",
-	},
-}
-
 func (r *meetupResolver) User(ctx context.Context, obj *models.Meetup) (*models.User, error) {
-	for _, user := range users {
-		if user.ID == obj.User.ID {
-			return user, nil
-		}
-	}
-	return nil, errors.New("user does not exist")
+	return r.UserRepo.GetUserByID(obj.UserID)
 }
 
 func (r *mutationResolver) CreateMeetup(ctx context.Context, input model.NewMeetup) (*models.Meetup, error) {
-	panic(fmt.Errorf("not implemented"))
+	if len(input.Name) < 3 {
+		return nil, errors.New("name not long enough")
+	}
+	if len(input.Description) < 5 {
+		return nil, errors.New("description not long enough")
+	}
+	meetup := &models.Meetup{
+		Name:        input.Name,
+		Description: input.Description,
+		UserID:      "1",
+	}
+
+	return r.MeetupRepo.CreateMeetup(meetup)
 }
 
 func (r *queryResolver) Meetups(ctx context.Context) ([]*models.Meetup, error) {
-	return meetups, nil
+	return r.MeetupRepo.GetMeetups()
 }
 
 func (r *userResolver) Meetups(ctx context.Context, obj *models.User) ([]*models.Meetup, error) {
-	var userMeetups []*models.Meetup
-
-	for _, m := range meetups {
-		if m.User.ID == obj.ID {
-			userMeetups = append(userMeetups, m)
-		}
-	}
-	return userMeetups, nil
+	return nil, nil
 }
 
 // Meetup returns generated.MeetupResolver implementation.
