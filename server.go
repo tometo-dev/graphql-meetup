@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/tsuki42/graphql-meetup/graph/resolver"
 	"github.com/tsuki42/graphql-meetup/postgres"
 	"log"
 	"net/http"
@@ -8,7 +9,6 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/tsuki42/graphql-meetup/graph"
 	"github.com/tsuki42/graphql-meetup/graph/generated"
 )
 
@@ -20,7 +20,7 @@ func main() {
 		port = defaultPort
 	}
 
-	config := generated.Config{Resolvers: &graph.Resolver{
+	config := generated.Config{Resolvers: &resolver.Resolver{
 		MeetupRepo: postgres.MeetupRepo{DB: postgres.Connection},
 		UserRepo:   postgres.UserRepo{DB: postgres.Connection},
 	}}

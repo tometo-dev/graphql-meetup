@@ -236,31 +236,30 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	&ast.Source{Name: "schema.graphqls", Input: `type User {
-  id: ID!
-  username: String!
-  email: String!
-  meetups: [Meetup!]!
-}
-
-type Meetup {
-  id: ID!
-  name: String!
-  description: String!
-  user: User!
+	&ast.Source{Name: "schema/meetup.graphql", Input: `type Meetup {
+    id: ID!
+    name: String!
+    description: String!
+    user: User!
 }
 
 input NewMeetup {
-  name: String!
-  description: String!
+    name: String!
+    description: String!
 }
 
 type Query {
-  meetups: [Meetup!]!
+    meetups: [Meetup!]!
 }
 
 type Mutation {
-  createMeetup(input: NewMeetup!): Meetup!
+    createMeetup(input: NewMeetup!): Meetup!
+}`, BuiltIn: false},
+	&ast.Source{Name: "schema/user.graphql", Input: `type User {
+    id: ID!
+    username: String!
+    email: String!
+    meetups: [Meetup!]!
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)

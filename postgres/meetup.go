@@ -28,3 +28,12 @@ func (m *MeetupRepo) CreateMeetup(meetup *models.Meetup) (*models.Meetup, error)
 		return meetup, nil
 	}
 }
+
+func (m *MeetupRepo) GetMeetupsByUser(userID string) ([]*models.Meetup, error) {
+	var meetups []*models.Meetup
+	err := m.DB.Table("MEETUP").Where("user_id = ?", userID).Find(&meetups).Error
+	if err != nil {
+		return nil, err
+	}
+	return meetups, nil
+}

@@ -1,4 +1,4 @@
-package graph
+package resolver
 
 import "github.com/tsuki42/graphql-meetup/postgres"
 

@@ -1,4 +1,4 @@
-package graph
+package resolver
 
 // This file will be automatically regenerated based on the schema, any resolver implementations
 // will be copied through when generating and any unknown code will be moved to the end.
@@ -35,10 +35,6 @@ func (r *queryResolver) Meetups(ctx context.Context) ([]*models.Meetup, error) {
 	return r.MeetupRepo.GetMeetups()
 }
 
-func (r *userResolver) Meetups(ctx context.Context, obj *models.User) ([]*models.Meetup, error) {
-	return nil, nil
-}
-
 // Meetup returns generated.MeetupResolver implementation.
 func (r *Resolver) Meetup() generated.MeetupResolver { return &meetupResolver{r} }
 
@@ -48,10 +44,6 @@ func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResol
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
-// User returns generated.UserResolver implementation.
-func (r *Resolver) User() generated.UserResolver { return &userResolver{r} }
-
 type meetupResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-type userResolver struct{ *Resolver }
