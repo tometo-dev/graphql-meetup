@@ -1,4 +1,4 @@
-# Where are all the schema files located? globs are supported eg  src/**/*.graphqls
+# Where are all the schema files located? globs are supported eg  src/**/*.graphql
 schema:
   - schema/*.graphql
 
@@ -21,7 +21,7 @@ model:
 resolver:
   layout: follow-schema
   dir: graph/resolver
-  package: graph
+  package: resolver
 
 # Optional: turn on use `gqlgen:"fieldName"` tags in your models
 # struct_tag: json

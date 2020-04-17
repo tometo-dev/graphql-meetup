@@ -6,6 +6,8 @@ package resolver
 import (
 	"context"
 	"errors"
+	"fmt"
+
 	"github.com/tsuki42/graphql-meetup/graph/dataloader"
 	"github.com/tsuki42/graphql-meetup/graph/generated"
 	"github.com/tsuki42/graphql-meetup/graph/model"
@@ -30,6 +32,54 @@ func (r *mutationResolver) CreateMeetup(ctx context.Context, input model.NewMeet
 	}
 
 	return r.MeetupRepo.CreateMeetup(meetup)
+}
+
+func (r *mutationResolver) UpdateMeetup(ctx context.Context, id string, input model.UpdateMeetup) (*models.Meetup, error) {
+	meetup, err := r.MeetupRepo.GetMeetupByID(id)
+
+	updated := false
+
+	if err != nil || meetup == nil {
+		return nil, errors.New("meetup with given id not found")
+	}
+
+	if input.Name != nil {
+		if len(*input.Name) < 3 {
+			return nil, errors.New("name not long enough")
+		}
+		meetup.Name = *input.Name
+		updated = true
+	}
+
+	if input.Description != nil {
+		if len(*input.Description) < 5 {
+			return nil, errors.New("description not long enough")
+		}
+		meetup.Description = *input.Description
+		updated = true
+	}
+
+	if !updated {
+		return nil, errors.New("nothing to update")
+	}
+
+	meetup, err = r.MeetupRepo.UpdateMeetup(meetup)
+	if err != nil {
+		return nil, fmt.Errorf("error while updating meetup: %v", err)
+	}
+	return meetup, nil
+}
+
+func (r *mutationResolver) DeleteMeetup(ctx context.Context, id string) (bool, error) {
+	meetup, err := r.MeetupRepo.GetMeetupByID(id)
+	if err != nil || meetup == nil {
+		return false, errors.New("meetup with given id doesn't exist")
+	}
+
+	if err = r.MeetupRepo.DeleteMeetup(id); err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 func (r *queryResolver) Meetups(ctx context.Context) ([]*models.Meetup, error) {
