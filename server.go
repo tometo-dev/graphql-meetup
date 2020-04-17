@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/tsuki42/graphql-meetup/graph/dataloader"
 	"github.com/tsuki42/graphql-meetup/graph/resolver"
 	"github.com/tsuki42/graphql-meetup/postgres"
 	"log"
@@ -28,7 +29,7 @@ func main() {
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(config))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	http.Handle("/query", dataloader.DataloaderMiddleware(postgres.Connection, srv))
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))

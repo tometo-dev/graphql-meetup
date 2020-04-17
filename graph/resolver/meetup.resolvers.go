@@ -6,13 +6,14 @@ package resolver
 import (
 	"context"
 	"errors"
+	"github.com/tsuki42/graphql-meetup/graph/dataloader"
 	"github.com/tsuki42/graphql-meetup/graph/generated"
 	"github.com/tsuki42/graphql-meetup/graph/model"
 	"github.com/tsuki42/graphql-meetup/models"
 )
 
 func (r *meetupResolver) User(ctx context.Context, obj *models.Meetup) (*models.User, error) {
-	return r.UserRepo.GetUserByID(obj.UserID)
+	return dataloader.GetUserLoader(ctx).Load(obj.UserID)
 }
 
 func (r *mutationResolver) CreateMeetup(ctx context.Context, input model.NewMeetup) (*models.Meetup, error) {
