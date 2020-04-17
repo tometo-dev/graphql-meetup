@@ -11,7 +11,7 @@ import (
 	"github.com/tsuki42/graphql-meetup/models"
 )
 
-func (r *queryResolver) Meetups(ctx context.Context, filter *model.MeetupFilter, limit *int, offset *int) ([]*models.Meetup, error) {
+func (r *queryResolver) Meetups(ctx context.Context, filter *model.MeetupFilterInput, limit *int, offset *int) ([]*models.Meetup, error) {
 	return r.MeetupRepo.GetMeetups(filter, limit, offset)
 }
 

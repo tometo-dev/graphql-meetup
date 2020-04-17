@@ -4,3 +4,17 @@ type Meetup {
     description: String!
     user: User!
 }
+
+input NewMeetupInput {
+    name: String!
+    description: String!
+}
+
+input UpdateMeetupInput {
+    name: String
+    description: String
+}
+
+input MeetupFilterInput {
+    name: String
+}

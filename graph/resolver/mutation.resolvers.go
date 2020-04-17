@@ -13,7 +13,7 @@ import (
 	"github.com/tsuki42/graphql-meetup/models"
 )
 
-func (r *mutationResolver) CreateMeetup(ctx context.Context, input model.NewMeetup) (*models.Meetup, error) {
+func (r *mutationResolver) CreateMeetup(ctx context.Context, input model.NewMeetupInput) (*models.Meetup, error) {
 	if len(input.Name) < 3 {
 		return nil, errors.New("name not long enough")
 	}
@@ -29,7 +29,7 @@ func (r *mutationResolver) CreateMeetup(ctx context.Context, input model.NewMeet
 	return r.MeetupRepo.CreateMeetup(meetup)
 }
 
-func (r *mutationResolver) UpdateMeetup(ctx context.Context, id string, input model.UpdateMeetup) (*models.Meetup, error) {
+func (r *mutationResolver) UpdateMeetup(ctx context.Context, id string, input model.UpdateMeetupInput) (*models.Meetup, error) {
 	meetup, err := r.MeetupRepo.GetMeetupByID(id)
 
 	updated := false

@@ -2,16 +2,16 @@
 
 package model
 
-type MeetupFilter struct {
+type MeetupFilterInput struct {
 	Name *string `json:"name"`
 }
 
-type NewMeetup struct {
+type NewMeetupInput struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
 
-type UpdateMeetup struct {
+type UpdateMeetupInput struct {
 	Name        *string `json:"name"`
 	Description *string `json:"description"`
 }

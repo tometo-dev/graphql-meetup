@@ -12,7 +12,7 @@ type MeetupRepo struct {
 	DB *gorm.DB
 }
 
-func (m *MeetupRepo) GetMeetups(filter *model.MeetupFilter, limit *int, offset *int) ([]*models.Meetup, error) {
+func (m *MeetupRepo) GetMeetups(filter *model.MeetupFilterInput, limit *int, offset *int) ([]*models.Meetup, error) {
 	var meetups []*models.Meetup
 
 	query := m.DB.Table("MEETUP").Order("name")

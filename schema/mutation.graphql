@@ -1,15 +1,5 @@
-input NewMeetup {
-    name: String!
-    description: String!
-}
-
-input UpdateMeetup {
-    name: String
-    description: String
-}
-
 type Mutation {
-    createMeetup(input: NewMeetup!): Meetup!
-    updateMeetup(id: ID!, input: UpdateMeetup!): Meetup!
+    createMeetup(input: NewMeetupInput!): Meetup!
+    updateMeetup(id: ID!, input: UpdateMeetupInput!): Meetup!
     deleteMeetup(id: ID!): Boolean!
 }

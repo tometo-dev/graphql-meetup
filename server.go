@@ -1,8 +1,11 @@
 package main
 
 import (
+	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"github.com/tsuki42/graphql-meetup/graph/dataloader"
 	"github.com/tsuki42/graphql-meetup/graph/resolver"
+	"github.com/tsuki42/graphql-meetup/middleware"
 	"github.com/tsuki42/graphql-meetup/postgres"
 	"log"
 	"net/http"
@@ -21,9 +24,19 @@ func main() {
 		port = defaultPort
 	}
 
+	router := mux.NewRouter()
+	router.Use(cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+		Debug:            true,
+	}).Handler)
+
+	userRepo := postgres.UserRepo{DB: postgres.Connection}
+	router.Use(middleware.AuthMiddleware(userRepo))
+
 	config := generated.Config{Resolvers: &resolver.Resolver{
 		MeetupRepo: postgres.MeetupRepo{DB: postgres.Connection},
-		UserRepo:   postgres.UserRepo{DB: postgres.Connection},
+		UserRepo:   userRepo,
 	}}
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(config))
