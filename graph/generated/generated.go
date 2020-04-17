@@ -269,9 +269,8 @@ var sources = []*ast.Source{
     name: String!
     description: String!
     user: User!
-}
-
-input NewMeetup {
+}`, BuiltIn: false},
+	&ast.Source{Name: "schema/mutation.graphql", Input: `input NewMeetup {
     name: String!
     description: String!
 }
@@ -281,14 +280,13 @@ input UpdateMeetup {
     description: String
 }
 
-type Query {
-    meetups: [Meetup!]!
-}
-
 type Mutation {
     createMeetup(input: NewMeetup!): Meetup!
     updateMeetup(id: ID!, input: UpdateMeetup!): Meetup!
     deleteMeetup(id: ID!): Boolean!
+}`, BuiltIn: false},
+	&ast.Source{Name: "schema/query.graphql", Input: `type Query {
+    meetups: [Meetup!]!
 }`, BuiltIn: false},
 	&ast.Source{Name: "schema/user.graphql", Input: `type User {
     id: ID!
