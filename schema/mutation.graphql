@@ -1,4 +1,5 @@
 type Mutation {
+    register(input: RegisterInput!): AuthResponse!
     createMeetup(input: NewMeetupInput!): Meetup!
     updateMeetup(id: ID!, input: UpdateMeetupInput!): Meetup!
     deleteMeetup(id: ID!): Boolean!

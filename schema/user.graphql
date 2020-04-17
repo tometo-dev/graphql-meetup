@@ -1,6 +1,31 @@
+scalar Time
+
+type AuthToken {
+    accessToken: String!
+    expiredAt: Time!
+}
+
+type AuthResponse {
+    authToken: AuthToken!
+    user: User!
+}
+
 type User {
     id: ID!
     username: String!
     email: String!
+    firstName: String!
+    lastName: String!
     meetups: [Meetup!]!
+    createdAt: Time!
+    updatedAt: Time!
+}
+
+input RegisterInput {
+    username: String!
+    email: String!
+    password: String!
+    confirmPassword: String!
+    firstName: String!
+    lastName: String!
 }

@@ -7,11 +7,10 @@ import (
 	"context"
 
 	"github.com/tsuki42/graphql-meetup/graph/generated"
-	"github.com/tsuki42/graphql-meetup/graph/model"
 	"github.com/tsuki42/graphql-meetup/models"
 )
 
-func (r *queryResolver) Meetups(ctx context.Context, filter *model.MeetupFilterInput, limit *int, offset *int) ([]*models.Meetup, error) {
+func (r *queryResolver) Meetups(ctx context.Context, filter *models.MeetupFilterInput, limit *int, offset *int) ([]*models.Meetup, error) {
 	return r.MeetupRepo.GetMeetups(filter, limit, offset)
 }
 

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
-	"github.com/tsuki42/graphql-meetup/graph/model"
 	"github.com/tsuki42/graphql-meetup/models"
 )
 
@@ -12,7 +11,7 @@ type MeetupRepo struct {
 	DB *gorm.DB
 }
 
-func (m *MeetupRepo) GetMeetups(filter *model.MeetupFilterInput, limit *int, offset *int) ([]*models.Meetup, error) {
+func (m *MeetupRepo) GetMeetups(filter *models.MeetupFilterInput, limit *int, offset *int) ([]*models.Meetup, error) {
 	var meetups []*models.Meetup
 
 	query := m.DB.Table("MEETUP").Order("name")

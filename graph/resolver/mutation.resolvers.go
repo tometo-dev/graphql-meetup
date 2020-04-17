@@ -9,11 +9,66 @@ import (
 	"fmt"
 
 	"github.com/tsuki42/graphql-meetup/graph/generated"
-	"github.com/tsuki42/graphql-meetup/graph/model"
+	"github.com/tsuki42/graphql-meetup/logging"
 	"github.com/tsuki42/graphql-meetup/models"
 )
 
-func (r *mutationResolver) CreateMeetup(ctx context.Context, input model.NewMeetupInput) (*models.Meetup, error) {
+func (r *mutationResolver) Register(ctx context.Context, input models.RegisterInput) (*models.AuthResponse, error) {
+	_, err := r.UserRepo.GetUserByEmail(input.Email)
+	if err == nil {
+		return nil, errors.New("email already in user")
+	}
+
+	_, err = r.UserRepo.GetUserByUsername(input.Username)
+	if err == nil {
+		return nil, errors.New("username already in user")
+	}
+
+	user := &models.User{
+		Username:  input.Username,
+		Email:     input.Email,
+		FirstName: input.FirstName,
+		LastName:  input.LastName,
+	}
+
+	err = user.HashPassword(input.Password)
+	if err != nil {
+		logging.ERROR.Printf("error while hashing password: %v", err)
+		return nil, errors.New("something went wrong")
+	}
+
+	// TODO: send verification code
+
+	tx := r.UserRepo.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if _, err := r.UserRepo.CreateUser(tx, user); err != nil {
+		logging.ERROR.Printf("error creating user: %v", err)
+		return nil, err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		logging.ERROR.Printf("error while commiting: %v", err)
+		return nil, errors.New("something went wrong")
+	}
+
+	token, err := user.GenerateToken()
+	if err != nil {
+		logging.ERROR.Printf("error while generating the token: %v", err)
+		return nil, errors.New("something went wrong")
+	}
+
+	return &models.AuthResponse{
+		AuthToken: token,
+		User:      user,
+	}, nil
+}
+
+func (r *mutationResolver) CreateMeetup(ctx context.Context, input models.NewMeetupInput) (*models.Meetup, error) {
 	if len(input.Name) < 3 {
 		return nil, errors.New("name not long enough")
 	}
@@ -29,7 +84,7 @@ func (r *mutationResolver) CreateMeetup(ctx context.Context, input model.NewMeet
 	return r.MeetupRepo.CreateMeetup(meetup)
 }
 
-func (r *mutationResolver) UpdateMeetup(ctx context.Context, id string, input model.UpdateMeetupInput) (*models.Meetup, error) {
+func (r *mutationResolver) UpdateMeetup(ctx context.Context, id string, input models.UpdateMeetupInput) (*models.Meetup, error) {
 	meetup, err := r.MeetupRepo.GetMeetupByID(id)
 
 	updated := false
