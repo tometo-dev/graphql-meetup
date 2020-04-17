@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
+	"github.com/tsuki42/graphql-meetup/graph/model"
 	"github.com/tsuki42/graphql-meetup/models"
 )
 
@@ -11,9 +12,26 @@ type MeetupRepo struct {
 	DB *gorm.DB
 }
 
-func (m *MeetupRepo) GetMeetups() ([]*models.Meetup, error) {
+func (m *MeetupRepo) GetMeetups(filter *model.MeetupFilter, limit *int, offset *int) ([]*models.Meetup, error) {
 	var meetups []*models.Meetup
-	err := m.DB.Table("MEETUP").Order("name").Find(&meetups).Error
+
+	query := m.DB.Table("MEETUP").Order("name")
+
+	if filter != nil {
+		if filter.Name != nil && *filter.Name != "" {
+			query = query.Where("name ILIKE ?", fmt.Sprintf("%%%s%%", *filter.Name))
+		}
+	}
+
+	if limit != nil {
+		query = query.Limit(*limit)
+	}
+
+	if offset != nil {
+		query = query.Offset(*offset)
+	}
+
+	err := query.Find(&meetups).Error
 	if err != nil {
 		return nil, err
 	} else {
