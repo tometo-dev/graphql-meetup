@@ -7,10 +7,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/tsuki42/graphql-meetup/middleware"
 
 	"github.com/tsuki42/graphql-meetup/graph/generated"
 	"github.com/tsuki42/graphql-meetup/logging"
 	"github.com/tsuki42/graphql-meetup/models"
+)
+
+var (
+	ErrorBadCredentials  = errors.New("entered email/password is wrong")
+	ErrorUnauthenticated = errors.New("unauthenticated")
 )
 
 func (r *mutationResolver) Register(ctx context.Context, input models.RegisterInput) (*models.AuthResponse, error) {
@@ -68,7 +74,31 @@ func (r *mutationResolver) Register(ctx context.Context, input models.RegisterIn
 	}, nil
 }
 
+func (r *mutationResolver) Login(ctx context.Context, input models.LoginInput) (*models.AuthResponse, error) {
+	user, err := r.UserRepo.GetUserByEmail(input.Email)
+	if err != nil {
+		return nil, ErrorBadCredentials
+	}
+
+	err = user.ComparePassword(input.Password)
+	if err != nil {
+		return nil, ErrorBadCredentials
+	}
+
+	token, err := user.GenerateToken()
+
+	return &models.AuthResponse{
+		AuthToken: token,
+		User:      user,
+	}, nil
+}
+
 func (r *mutationResolver) CreateMeetup(ctx context.Context, input models.NewMeetupInput) (*models.Meetup, error) {
+	currentUser, err := middleware.GetCurrentUserFromContext(ctx)
+	if err != nil {
+		return nil, ErrorUnauthenticated
+	}
+
 	if len(input.Name) < 3 {
 		return nil, errors.New("name not long enough")
 	}
@@ -78,7 +108,7 @@ func (r *mutationResolver) CreateMeetup(ctx context.Context, input models.NewMee
 	meetup := &models.Meetup{
 		Name:        input.Name,
 		Description: input.Description,
-		UserID:      "1",
+		UserID:      currentUser.ID,
 	}
 
 	return r.MeetupRepo.CreateMeetup(meetup)

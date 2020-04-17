@@ -16,6 +16,11 @@ type AuthToken struct {
 	ExpiredAt   time.Time `json:"expiredAt"`
 }
 
+type LoginInput struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 type MeetupFilterInput struct {
 	Name *string `json:"name"`
 }

@@ -29,3 +29,8 @@ input RegisterInput {
     firstName: String!
     lastName: String!
 }
+
+input LoginInput {
+    email: String!
+    password: String!
+}

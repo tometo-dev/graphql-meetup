@@ -28,7 +28,6 @@ func main() {
 	router.Use(cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
-		Debug:            true,
 	}).Handler)
 
 	userRepo := postgres.UserRepo{DB: postgres.Connection}
@@ -41,9 +40,9 @@ func main() {
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(config))
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", dataloader.DataloaderMiddleware(postgres.Connection, srv))
+	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	router.Handle("/query", dataloader.DataloaderMiddleware(postgres.Connection, srv))
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
