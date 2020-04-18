@@ -6,13 +6,10 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/joho/godotenv"
 	"github.com/tsuki42/graphql-meetup/logging"
-	"gopkg.in/go-playground/validator.v9"
 	"os"
 )
 
 var Connection *gorm.DB
-
-var Validator *validator.Validate
 
 func init() {
 	err := godotenv.Load()
@@ -41,8 +38,6 @@ func init() {
 	Connection.SetLogger(logging.DB)
 	Connection.DB().SetMaxOpenConns(50)
 	Connection.DB().SetMaxIdleConns(10)
-
-	Validator = validator.New()
 
 	ValidateSchema()
 

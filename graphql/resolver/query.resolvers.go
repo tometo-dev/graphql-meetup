@@ -6,16 +6,16 @@ package resolver
 import (
 	"context"
 
-	"github.com/tsuki42/graphql-meetup/graph/generated"
+	"github.com/tsuki42/graphql-meetup/graphql/generated"
 	"github.com/tsuki42/graphql-meetup/models"
 )
 
 func (r *queryResolver) Meetups(ctx context.Context, filter *models.MeetupFilterInput, limit *int, offset *int) ([]*models.Meetup, error) {
-	return r.MeetupRepo.GetMeetups(filter, limit, offset)
+	return r.Domain.MeetupRepo.GetMeetups(filter, limit, offset)
 }
 
 func (r *queryResolver) User(ctx context.Context, id string) (*models.User, error) {
-	return r.UserRepo.GetUserByID(id)
+	return r.Domain.UserRepo.GetUserByID(id)
 }
 
 // Query returns generated.QueryResolver implementation.

@@ -14,7 +14,7 @@ import (
 
 const CurrentUserKey = "current-user"
 
-func AuthMiddleware(repo postgres.UserRepo) func(handler http.Handler) http.Handler {
+func AuthMiddleware(repo postgres.UserRepo) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			token, err := parseToken(r)

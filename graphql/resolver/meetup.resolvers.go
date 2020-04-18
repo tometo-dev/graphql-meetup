@@ -6,8 +6,8 @@ package resolver
 import (
 	"context"
 
-	"github.com/tsuki42/graphql-meetup/graph/dataloader"
-	"github.com/tsuki42/graphql-meetup/graph/generated"
+	"github.com/tsuki42/graphql-meetup/graphql/dataloader"
+	"github.com/tsuki42/graphql-meetup/graphql/generated"
 	"github.com/tsuki42/graphql-meetup/models"
 )
 

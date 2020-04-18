@@ -6,12 +6,12 @@ package resolver
 import (
 	"context"
 
-	"github.com/tsuki42/graphql-meetup/graph/generated"
+	"github.com/tsuki42/graphql-meetup/graphql/generated"
 	"github.com/tsuki42/graphql-meetup/models"
 )
 
 func (r *userResolver) Meetups(ctx context.Context, obj *models.User) ([]*models.Meetup, error) {
-	return r.MeetupRepo.GetMeetupsByUser(obj.ID)
+	return r.Domain.MeetupRepo.GetMeetupsByUser(obj.ID)
 }
 
 // User returns generated.UserResolver implementation.

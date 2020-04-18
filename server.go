@@ -3,8 +3,9 @@ package main
 import (
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
-	"github.com/tsuki42/graphql-meetup/graph/dataloader"
-	"github.com/tsuki42/graphql-meetup/graph/resolver"
+	"github.com/tsuki42/graphql-meetup/domain"
+	"github.com/tsuki42/graphql-meetup/graphql/dataloader"
+	"github.com/tsuki42/graphql-meetup/graphql/resolver"
 	"github.com/tsuki42/graphql-meetup/middleware"
 	"github.com/tsuki42/graphql-meetup/postgres"
 	"log"
@@ -13,7 +14,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/tsuki42/graphql-meetup/graph/generated"
+	"github.com/tsuki42/graphql-meetup/graphql/generated"
 )
 
 const defaultPort = "8080"
@@ -33,10 +34,9 @@ func main() {
 	userRepo := postgres.UserRepo{DB: postgres.Connection}
 	router.Use(middleware.AuthMiddleware(userRepo))
 
-	config := generated.Config{Resolvers: &resolver.Resolver{
-		MeetupRepo: postgres.MeetupRepo{DB: postgres.Connection},
-		UserRepo:   userRepo,
-	}}
+	d := domain.NewDomain(userRepo, postgres.MeetupRepo{DB: postgres.Connection})
+
+	config := generated.Config{Resolvers: &resolver.Resolver{Domain: d}}
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(config))
 
