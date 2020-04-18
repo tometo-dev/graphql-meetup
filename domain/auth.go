@@ -7,11 +7,6 @@ import (
 	"github.com/tsuki42/graphql-meetup/models"
 )
 
-var (
-	ErrorBadCredentials  = errors.New("entered email/password is wrong")
-	ErrorUnauthenticated = errors.New("unauthenticated")
-)
-
 func (d *Domain) Register(ctx context.Context, input models.RegisterInput) (*models.AuthResponse, error) {
 	_, err := d.UserRepo.GetUserByEmail(input.Email)
 	if err == nil {
@@ -70,12 +65,12 @@ func (d *Domain) Register(ctx context.Context, input models.RegisterInput) (*mod
 func (d *Domain) Login(ctx context.Context, input models.LoginInput) (*models.AuthResponse, error) {
 	user, err := d.UserRepo.GetUserByEmail(input.Email)
 	if err != nil {
-		return nil, ErrorBadCredentials
+		return nil, ErrBadCredentials
 	}
 
 	err = user.ComparePassword(input.Password)
 	if err != nil {
-		return nil, ErrorBadCredentials
+		return nil, ErrBadCredentials
 	}
 
 	token, err := user.GenerateToken()

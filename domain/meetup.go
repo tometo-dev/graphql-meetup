@@ -11,7 +11,7 @@ import (
 func (d *Domain) CreateMeetup(ctx context.Context, input models.NewMeetupInput) (*models.Meetup, error) {
 	currentUser, err := middleware.GetCurrentUserFromContext(ctx)
 	if err != nil {
-		return nil, ErrorUnauthenticated
+		return nil, ErrUnauthenticated
 	}
 
 	if len(input.Name) < 3 {
@@ -30,13 +30,22 @@ func (d *Domain) CreateMeetup(ctx context.Context, input models.NewMeetupInput) 
 }
 
 func (d *Domain) UpdateMeetup(ctx context.Context, id string, input models.UpdateMeetupInput) (*models.Meetup, error) {
-	meetup, err :=d.MeetupRepo.GetMeetupByID(id)
+	currentUser, err := middleware.GetCurrentUserFromContext(ctx)
+	if err != nil {
+		return nil, ErrUnauthenticated
+	}
 
-	updated := false
+	meetup, err := d.MeetupRepo.GetMeetupByID(id)
 
 	if err != nil || meetup == nil {
 		return nil, errors.New("meetup with given id not found")
 	}
+
+	if !meetup.IsOwner(currentUser) {
+		return nil, ErrForbidden
+	}
+
+	updated := false
 
 	if input.Name != nil {
 		if len(*input.Name) < 3 {
@@ -58,7 +67,7 @@ func (d *Domain) UpdateMeetup(ctx context.Context, id string, input models.Updat
 		return nil, errors.New("nothing to update")
 	}
 
-	meetup, err =d.MeetupRepo.UpdateMeetup(meetup)
+	meetup, err = d.MeetupRepo.UpdateMeetup(meetup)
 	if err != nil {
 		return nil, fmt.Errorf("error while updating meetup: %v", err)
 	}
@@ -66,12 +75,21 @@ func (d *Domain) UpdateMeetup(ctx context.Context, id string, input models.Updat
 }
 
 func (d *Domain) DeleteMeetup(ctx context.Context, id string) (bool, error) {
-	meetup, err :=d.MeetupRepo.GetMeetupByID(id)
+	currentUser, err := middleware.GetCurrentUserFromContext(ctx)
+	if err != nil {
+		return false, ErrUnauthenticated
+	}
+
+	meetup, err := d.MeetupRepo.GetMeetupByID(id)
 	if err != nil || meetup == nil {
 		return false, errors.New("meetup with given id doesn't exist")
 	}
 
-	if err =d.MeetupRepo.DeleteMeetup(id); err != nil {
+	if !meetup.IsOwner(currentUser) {
+		return false, ErrForbidden
+	}
+
+	if err = d.MeetupRepo.DeleteMeetup(id); err != nil {
 		return false, err
 	}
 	return true, nil

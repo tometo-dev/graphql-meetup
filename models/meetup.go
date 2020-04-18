@@ -6,3 +6,8 @@ type Meetup struct {
 	Description string `json:"description" gorm:"column:description" validate:"required"`
 	UserID      string `json:"user_id" gorm:"column:user_id"`
 }
+
+func (m *Meetup) IsOwner(user *User) bool {
+	return m.UserID == user.ID
+}
+
